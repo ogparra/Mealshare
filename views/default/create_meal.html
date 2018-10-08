@@ -1,0 +1,215 @@
+{{extend 'layout.html'}}
+<script src="{{=URL('static', 'js/vue.js')}}"></script>
+{{block head}}
+<script> 
+	//These two URL calls should only work if the user is logged in
+	var get_items_url = "{{=URL('grocery', 'get_items')}}"; 
+	var add_grocery_url = "{{=URL('grocery', 'add_grocery_item')}}";
+	var del_grocery_url = "{{=URL('grocery', 'del_grocery_item')}}";
+	var edit_grocery_url = "{{=URL('grocery', 'edit_grocery_item')}}";
+	var get_users_url = "{{=URL('grocery', 'get_users')}}";
+    var logged_in_url = "{{=URL('grocery', 'get_logged')}}";
+    var get_users_items_url = "{{=URL('grocery','get_items_for_user')}}"
+    var get_friends_url = "{{=URL('friends', 'get_friends')}}"; 
+    var create_meal_url = "{{=URL('grocery', 'create_meal')}}";
+    var get_meals_url = "{{=URL('grocery', 'get_meals')}}";
+</script>
+{{end}}
+
+	<div class="main_content">
+		<h1 class="title"><span id="meal">Meal</span><span id="share">share</span></h1>
+
+		<!-- All of our vue.js code will go inside this div block -->
+	    <div id="vue-div">
+	    	<!-- Code for login/signup buttons -->
+	    	<!--slot>${!logged_in}</slot-->
+	    	<div class="" v-bind:class="{'hide':logged_in}">
+		         <p class="buttons" align="center">
+
+		         	<a class="btn btn-default btn1" href="{{=URL('default', 'user', args='login')}}"><i class="fa fa-sign-in" aria-hidden="true"></i> Login </a>
+		         	<a class="btn btn-default btn2" href="{{=URL('default', 'user', args='register')}}"><i class="fa fa-user-plus" aria-hidden="true"></i> Sign up</a>
+		         </p>
+		            <p class="text">Mealshare is a simple web app that allows friends to see what other friends  have in their pantries and create meals together</p>
+
+		         <p align="center" style="margin-bottom: 20px;">How it works</p>
+		            <div class="row how-it-works">
+		            	<ul class="list">
+		            		<li  class="col-md-4">
+		            			<i><img src="/mealshare/static/flaticon/images/groceries.png" class="img-desc" ></i>
+		            			<div class="desc">
+		            				Login or sign up and starting adding grocery items to your pantry
+		            			<div>
+		            		</li>
+		            		<li  class="col-md-4">
+		            			<i class="fa fa-users" aria-hidden="true"></i>
+		            			<div class="desc">
+		            				Connect and add friends to start sharing meals
+		            			<div>
+		            		</li>
+		            		<li  class="col-md-4">
+		            			<i><img src="/mealshare/static/flaticon/images/salad.png" class="img-desc2"></i>
+		            			<i><img src="/mealshare/static/flaticon/images/pancakes.png" class="img-desc2"></i>
+		            			<i><img src="/mealshare/static/flaticon/images/noodles.png" class="img-desc2"></i>
+		            			<div class="desc" style="margin-left: 30px;">
+		            				Select the groceries in your pantry you want to share and begin creating meals with friends and family
+		            			</div>
+		            		</li>
+		            	</ul>
+				    </div>
+
+	     	</div>
+	         <!-- need to fix button centering --> 
+        <div v-if="!is_getting_meals">
+	         <!-- If no user is no logged in then don't show him pantry or add item button -->
+	        <div class="" v-bind:class="{'hide':!logged_in}">
+		         <div v-if="!adding_item" >
+		         	  <div class="signed_btns"> <a href="{{=URL('default', 'index')}}" class="btn btn-default btn-warning" v-bind:class="{'show': logged_in}">
+		            	<i class="fa fa-arrow-left" aria-hidden="true" style="padding-right: 5px;"></i>Cancel Meal </a>
+		             </div>
+                     <button v-on:click="getting_meals()" class="btn btn-default btn-success" style="background-color:#4283f4">
+                         <i class="fa fa-cart-plus" style="padding-right: 5px;"></i>See Meal Requests
+                     </button>
+		 			 <p style ="display: inline; font-size: 20px;"> Select the groceries in your pantry you want to create meal with and begin creating meals with friends and family</p>
+				 </div>
+	        	<div>
+		        	<div class="users_table" id="add_item_div">
+		        		<table>
+			            <thead>
+			                <tr>
+			                    <th>Users</th>
+			                </tr>
+		                </thead>
+		                <tbody>
+		                	<tr v-for="friend in friends">
+		                		<td class="users"><button v-if="friend.is_mutual" class="btn-user btn-small" v-on:click="get_users_items(friend.friend_email)">${friend.user_name}</button></td>
+		                	</tr>
+		                </tbody>
+		            	</table>
+		        		<!-- All of the current pantry items will go inside of a table in this div block -->
+		        	</div>
+
+		        	<div class="pantry_table_user" v-bind:class="{'hide':!clicked_user}"> 
+		        		<table width="50%;">
+				            <thead>
+				                <tr>
+				                    <th>Grocery</th>
+				                    <th>Expiration Date</th>
+				                    <th>Item Quantity</th>
+				                    <th width="3%" style="padding-right: 10px;">Select item</th>
+				                </tr>
+			                </thead>
+			                <tbody>
+			                	<tr v-for="item in user_items">
+			                		<td>${item.item_name}</td>
+			                		<td>${item.exp_date}</td>
+			                		<td>${item.item_num}</td>
+			                		<td><button class="btn btn-primary" v-on:click="add_to_meal(item)"><i class="fa fa-plus" aria-hidden="true"></i></button></td>
+		                        </tr>
+			                </tbody>
+	            		</table>
+		        	</div>
+		         	<div class="pantry_table_ruser" v-bind:class="{'hide':!clicked_user}">
+						<slot style ="font-size: 20px;" v-if="logged_in_user == user_logged_in">${user_in}</slot>
+	        		<table width="50%;">
+				            <thead>
+				                <tr>
+				                    <th><span class="grocery">Grocery</span></th>
+				                    <th>Expiration Date</th>
+				                    <th>Item Quantity</th>
+				                    <th width="3%;" style="padding-right: 10px;">Select item</th>
+				                </tr>
+			                </thead>
+			                <tbody>
+			                	<tr v-for="item in items">
+                                    <template v-if="item.check_user">
+			                	        <td>${item.item_name}</td>
+                                        <td>${item.exp_date}</td>
+			                		    <td>${item.item_num}</td>
+			                		    <td><button class="btn btn-primary" v-on:click="add_to_meal(item)"><i class="fa fa-plus" aria-hidden="true"></i></button></td>
+                                    </template>
+		                        </tr>
+			                </tbody>
+	            		</table>
+	            		<div style="padding-top: 50px; padding-bottom: 50px;">
+		            		<button v-on:click="checkout_meal()"><i class="fa fa-shopping-cart" aria-hidden="true"></i>
+		            			Checkout Meal
+		            		</button>
+		            		<p style="font-size:20px;">Current number of groceries in meal: ${meal_num} </p>
+		            		<!--p> ${meal_cart}</p-->
+		            		<table>
+					            <thead>
+					                <tr>
+					                    <th>Grocery Item</th>
+                                        <th>Expiration Date</th>
+                                        <th>Item Quantity</th>
+                                        <th>Owner</th>
+					                </tr>
+				                </thead>
+				                <tbody>
+				                	<tr v-for="x in meal_items">
+	                                    <template>
+				                	        <td>${x.item_name}</td>
+                                            <td>${x.exp_date}</td>
+                                            <td>${x.item_num}</td>
+                                            <td>${x.email}</td>
+	                                        <!--td>${item.exp_date}</td>
+				                		    <td>${item.item_num}</td>
+				                		    <td><button v-on:click="add_to_meal(item.id)"><i class="fa fa-plus" aria-hidden="true"></i></button></td-->
+	                                    </template>
+			                        </tr>
+				                </tbody>
+	            			</table>
+	            		</div>
+	            	</div>
+	            </div>
+        	</div>
+            </div>
+            <div v-if="is_getting_meals">
+                <button v-on:click="getting_meals()" class="btn btn-warning">
+                    <i class="fa fa-arrow-left  "> </i> Back to create meal
+                </button>
+                <template v-if="!meals_are_empty">
+                <h1>Your meal requests!</h1>
+                    <template v-for="meal in meals_arr">
+                        <div class="pantry_table">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>Grocery Item</th>
+                                    <th>Expiration Date</th>
+                                    <th>Item Quantity</th>
+                                    <th>Item Owner</th>
+                                    <th>Meal request made by</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="item in meal">
+                                    <template>
+                                        <td>${item.item_name}</td>
+                                        <td>${item.item_exp}</td>
+                                        <td>${item.item_num}</td>
+                                        <td>${item.item_owner}</td>
+                                        <td>${item.req_owner}</td>
+
+                                        <!--td>${item.exp_date}</td>
+                                                <td>${item.item_num}</td>
+                                                <td><button v-on:click="add_to_meal(item.id)"><i class="fa fa-plus" aria-hidden="true"></i></button></td-->
+                                    </template>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div style="padding-top: 20px;">
+                            <button class="btn btn-success">Accept</button>  <button class="btn btn-warning">Deny</button>
+                            </div>
+                        </div>
+                    </template>
+                </template>
+                <template v-if="meals_are_empty">
+                    <h1>You have no meal requests</h1>
+                </template>
+            </div>
+	    </div>
+	    <!-- current end of vue.js file --> 
+
+</div>
+<script src="{{=URL('static', 'js/default_index.js')}}"></script>

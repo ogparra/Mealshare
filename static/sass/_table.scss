@@ -1,0 +1,268 @@
+.pantry_table{
+	margin-top:10px;
+	thead{
+		background-color: #8c9093;
+		th{
+			padding-right: 100px;
+			border-style: solid;
+			font-size:20px;
+		}
+	}
+	tbody{
+		tr:nth-child(even){
+			background-color: #ffffff;
+			td{
+				border-style:solid;
+				font-size:20px;
+				text-align:center;
+			}
+		}
+	}
+}
+
+.edit{
+	button{
+		color:$clrMeal;
+		background-color: transparent;
+		border-style: none; 
+		width: 100%;
+	}
+	
+	button:hover{
+		color:$clrMeal;
+		background-color: transparent;
+	}
+}
+
+.delete{
+	button{
+		color:black;
+		background-color: transparent;
+		border-style: none; 
+		width: 100%;
+	}
+	
+	button:hover{
+		color:red;
+		background-color: transparent;
+	}
+}
+
+.flaticon-apple-1{
+	color:red;
+}
+
+.flaticon-banana{
+	color: yellow;
+}
+
+.flaticon-orange{
+	color: orange;
+}
+
+// code for the table of users in create_meal.html 
+
+.users_table{
+	display:inline-block;
+	margin-top:10px;
+	float:left;
+	padding-right: 10px;
+	thead{
+		background-color: #8c9093;
+		th{
+			text-align: center;
+			border-style: solid;
+			font-size:20px;
+		}
+	}
+	tbody{
+		tr:nth-child(even){
+			background-color: #f2f2f2;
+			td{
+				border-style:solid;
+				font-size:20px;
+				text-align:center;
+			}
+		}
+	}
+	tbody{
+		tr{
+			td{
+				button{
+					width: 100%;
+					border-style: none;
+					background-color:white;
+
+				}
+				button:hover{
+					width: 100%;
+					border-style: none; 
+					background-color:black;
+				}
+			}
+			td:hover{
+				color: white;
+			}
+		}
+	}
+
+}
+
+.users_table2{
+	border-collapse:collapse;
+	display:inline-block;
+	margin-top:10px;
+	float:left;
+	padding-right: 10px;
+	thead{
+		background-color: #8c9093;
+		th{
+			text-align: center;
+			border-style: solid;
+			font-size:20px;
+		}
+	}
+	tbody{
+		tr:nth-child(even){
+			background-color: #f2f2f2;
+			td{
+				border-style:solid;
+				font-size:20px;
+				text-align:center;
+				border:none;
+				button{
+					background-color: $clrShare;
+					width: 100%;
+				}
+				button:hover{
+					background-color: green;
+					width: 100%;
+				}
+			}
+			td:hover{
+				border:none;
+				font-size:20px;
+				text-align:center;
+			}
+		}
+	}
+}
+
+.friends_table{
+	border-collapse:collapse;
+	display:inline-block;
+	margin-top:10px;
+	float:left;
+	padding-right: 10px;
+	thead{
+		background-color: #8c9093;
+		th{
+			text-align: center;
+			border-style: solid;
+			font-size:20px;
+		}
+	}
+	tbody{
+		trnth-child(even){
+			background-color: #f2f2f2;
+			td{
+				border-style:solid;
+				font-size:20px;
+				text-align:center;
+				border:none;
+				button{
+					background-color: $clrShare;
+					width: 100%;
+				}
+				button:hover{
+					background-color: red;
+					width: 100%;
+				}
+			}
+			td:hover{
+				border:none;
+				font-size:20px;
+				text-align:center;
+			}
+		}
+	}
+
+}
+
+
+
+//table CSS for create_meal.html? check
+.pantry_table_user{
+	display: inline-block;
+	margin-top:10px;
+	thead{
+		background-color: #8c9093;
+		th{
+			padding-right: 100px;
+			border-style: solid;
+			font-size:20px;
+		}
+	}
+	tbody{
+		tr:nth-child(even){
+			background-color: #f2f2f2;
+			td{
+				border-style:solid;
+				font-size:20px;
+				text-align:center;
+				button{
+					width: 100%;
+				}
+				button:hover{
+					background-color: #f49b42;
+					width: 100%;
+				}
+			td:hover{
+				border: none;
+				font-size: 20px;
+				text-align: center;
+			}
+			}
+		}
+	}
+}
+
+
+.pantry_table_ruser{
+	display: inline-block;
+	margin-top:10px;
+	thead{
+		background-color: #8c9093;
+		th{
+			padding-right: 100px;
+			border-style: solid;
+			font-size:20px;
+		}
+	}
+	tbody{
+		tr:nth-child(even){
+			background-color: #f2f2f2;
+			td{
+				border-style:solid;
+				font-size:20px;
+				text-align:center;
+				button{
+					width: 100%;
+				}
+				button:hover{
+					background-color: #f49b42;
+					width: 100%;
+				}
+			td:hover{
+				border: none;
+				font-size: 20px;
+				text-align: center;
+			}
+			}
+		}
+	}
+}
+
+
+
+

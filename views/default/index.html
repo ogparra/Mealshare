@@ -1,0 +1,202 @@
+{{extend 'layout.html'}}
+<script src="{{=URL('static', 'js/vue.js')}}"></script>
+{{block head}}
+<script> 
+	//These two URL calls should only work if the user is logged in
+	var get_items_url = "{{=URL('grocery', 'get_items')}}"; 
+	var add_grocery_url = "{{=URL('grocery', 'add_grocery_item')}}";
+	var del_grocery_url = "{{=URL('grocery', 'del_grocery_item')}}";
+	var edit_grocery_url = "{{=URL('grocery', 'edit_grocery_item')}}";
+    var get_users_url = "{{=URL('grocery', 'get_users')}}";
+    var get_users_items_url = "{{=URL('grocery','get_items_for_user')}}";
+    var logged_in_url = "{{=URL('grocery', 'get_logged')}}";
+    var add_friends_url = "{{=URL('friends', 'add_friend')}}";
+    var get_friends_url = "{{=URL('friends', 'get_friends')}}";
+    var confirm_request_url = "{{=URL('friends', 'confirm_request')}}";
+    var del_friend_url ="{{=URL('friends', 'del_friend')}}";
+    var get_profile_url = "{{=URL('default', 'get_profile')}}";
+    var get_meals_url = "{{=URL('grocery', 'get_meals')}}";
+
+</script>
+{{end}}
+
+	<div class="main_content">
+		<h1 class="title"><span id="meal">Meal</span><span id="share">share</span></h1>
+
+		<!-- All of our vue.js code will go inside this div block -->
+	    <div id="vue-div">
+	    	<!-- Code for login/signup buttons -->
+
+	    	<div class="" v-bind:class="{'hide':logged_in}">
+		         <p class="buttons" align="center">
+		         	
+		         	<a class="btn btn-default btn1" href="{{=URL('default', 'user', args='login')}}"><i class="fa fa-sign-in" aria-hidden="true"></i> Login </a>
+		         	<a class="btn btn-default btn2" href="{{=URL('default', 'user', args='register')}}"><i class="fa fa-user-plus" aria-hidden="true"></i> Sign up</a>
+		         </p>
+		            <p class="text">Mealshare is a simple web app that allows friends to see what other friends  have in their pantries and create meals together</p>
+		       
+		         <p align="center" style="margin-bottom: 20px;">How it works</p>
+		            <div class="row how-it-works">
+		            	<ul class="list">
+		            		<li  class="col-md-4">
+		            			<i><img src="/mealshare/static/flaticon/images/groceries.png" class="img-desc" ></i>
+		            			<div class="desc">
+		            				Login or sign up and starting adding grocery items to your pantry 
+		            			</div>
+		            		</li>
+		            		<li  class="col-md-4">
+		            			<i class="fa fa-users" aria-hidden="true"></i>
+		            			<div class="desc">
+		            				Connect and add friends to start sharing meals
+		            			</div>
+		            		</li>
+		            		<li  class="col-md-4">
+		            			<i><img src="/mealshare/static/flaticon/images/salad.png" class="img-desc2"></i>
+		            			<i><img src="/mealshare/static/flaticon/images/pancakes.png" class="img-desc2"></i>
+		            			<i><img src="/mealshare/static/flaticon/images/noodles.png" class="img-desc2"></i>
+		            			<div class="desc" style="margin-left: 30px;">
+		            				Select the groceries in your pantry you want to share and begin creating meals with friends and family 
+		            			</div>
+		            		</li>
+		            	</ul> 
+				    </div>
+
+	     	</div>
+	         <!-- need to fix button centering --> 
+
+	         <!-- If no user is no logged in then don't show him pantry or add item button -->
+	        <div class="" v-bind:class="{'hide':!logged_in}">
+		         <div v-if="!adding_item" >
+		         	  <div class="signed_btns"> <button v-on:click="add_item()" class="btn btn-default" v-bind:class="{'show': logged_in}">
+		            	<i class="fa fa-plus" aria-hidden="true"></i> Add item </button>
+		             </div>	
+		             <div class="signed_btns"> <button v-on:click="adding_users()" class="btn btn-default" v-bind:class="{'show': logged_in}">
+		            	<i class="fa fa-plus" aria-hidden="true"></i> Add friends </button>
+		             </div>	
+		             <div class="signed_btns">
+		               <a href="{{=URL('default', 'create_meal')}}" class="btn btn-default btn-success" v-bind:class="{'show': logged_in}">
+		            	<i class="fa fa-cutlery" aria-hidden="true"></i> Create Meal </a>
+		            </div>
+				 </div>
+				
+				 <div v-if="adding_item" id="add_item_div">
+	                <div class="form-group">
+	                    <div>
+	                        <!--input class="form-control string" id="no_table_artist" v-model="form_post" placeholder="Post Content" type="text" /-->
+	                     <input placeholder="Grocery item name" v-model="item_name"></input>
+	                     <input placeholder="Expiration date (in days)" v-model="item_exp"></input>
+	                       <span class="help-block"></span></input>
+	                     	<div class="item_quantity" style="display:inline;">
+			                   	 <button class="btn btn-sm btn-default" v-on:click="item_quantity(1)"> <i class="fa fa-plus-circle fa-3x" aria-hidden="true"></i> </button>
+			                   	 <button class="btn btn-sm btn-default" v-on:click="item_quantity(0)"> <i class="fa fa-minus-circle fa-3x" aria-hidden="true"></i> </button>
+			                   	 <slot class="item_number" v-model="item_num">${num_items}</slot>
+		                   	</div>
+	                    </div>
+	                </div>
+	                <form v-on:submit.prevent="add_to_pantry">
+		                 <div class="form-group">
+		                    <div>
+		                    	<!-- Change v-on:click function call...-->
+		                        <input v-on:click="add_item()" class="btn btn-warning btns-ac" type="submit" value="Add" />
+		                        <input v-on:click="add_item()" class="btn btn-primary btns-ac" type="button" value="Cancel" />
+		                    </div>
+		                </div>
+	        		</form>
+	        	</div>
+	        	
+	        	<div class="pantry_table" id="add_item_div">
+	        		<table>
+		            <thead>
+		                <tr>
+		                    <th>Grocery</th>
+		                    <th>Expiration Date</th>
+		                    <th>Item Quantity</th>
+		                    <th>Edit</th>
+		                    <th>Delete</th>
+		                </tr>
+	                </thead>
+	                <tbody>
+	                	<tr v-for="item in items">
+                            <template v-if="item.check_user">
+                                <template v-if="item_iden != item.id">
+	                			    <td>${item.item_name}</td>
+	                			    <td>${item.exp_date}</td>
+	                			    <td>${item.item_num}</td>
+	                		    </template>
+	                		    <template v-else>
+	                		    	<td><input placeholder="Grocery Name" v-model="item_edit_name"> </input></td>
+	                		    	<td><input placeholder="Expiration date" v-model="item_edit_exp"></input></td>
+	                		    	<td><input placeholder="Number of items" v-model="item_edit_num"></input></td>
+	                		    	<td v-if="item_iden == item.id" class="edit_"><button class="fa fa-pencil-square-o " v-on:click="edit_item_finish(item.id, items)"></button></td>
+	                		    </template>
+	                		    <td v-if="item_iden != item.id" class="edit"><button class="fa fa-pencil-square-o " v-on:click="edit_item(item.id)"></button></td>
+	                		    <td class="delete"><button class="fa fa-trash-o" v-on:click="delete_item(item.id, items)"></button></td>
+                            </template>
+                        </tr>
+	                </tbody>
+	            	</table>
+	        		<!-- All of the current pantry items will go inside of a table in this div block -->
+	        	</div>
+	        	<div v-if="adding_user" style="padding-top: 50px;">
+	        		<div>
+		        		<table class="users_table2" id="add_item_div">
+				            <thead>
+				                <tr>
+				                    <th>Mealshare Users</th>
+				                    <th>Add User</th>
+				                </tr>
+			                </thead>
+			                <tbody>
+			                	<tr v-for="user in registered_users">
+			                		<td class="list_users nohover"><a v-on:click="get_profile(user.id)" >${user.fname} ${user.lname}<a></td>
+			                		<td class="add_me">
+			                			<button v-if="check_users(user.email)" class="btn btn-default" v-on:click="add_friend(user.email)"> <i class="fa fa-plus fa-lg" aria-hidden="true"> </i> </button>
+			                		</td>
+			                	</tr>
+			                </tbody>
+			            </table>
+		        		<!-- All of the current pantry items will go inside of a table in this div block -->
+		        	</div>
+
+		        	<div style="padding-left: 50px;">
+		        		<table class="friends_table" id="add_item_div">
+				            <thead>
+				                <tr>
+				                    <th>Friends</th>
+				                    <th>Remove User</th>
+				                    <th>Status</th>
+				                </tr>
+			                </thead>
+			                <tbody>
+			                	<tr v-for="friend in friends">
+
+			                		<td class="list_users nohover"> ${friend.user_name} </td>
+			                		<td class="del_me"><button class="btn btn-default btn-del" v-on:click="delete_user(friend.id)"> <i class="fa fa-minus fa-lg" aria-hidden="true"> </i> </button></td>
+                                    <template v-if="!friend.is_mutual">
+                                         <td v-if="friend.request"><button v-on:click="confirm_request(friend.friend_email, friend.id)">Approve</button></td>
+                                         <td v-if="!friend.request">Pending</td>
+                                    </template>
+			                	</tr>
+			                </tbody>
+			            </table>
+		        		<!-- All of the current pantry items will go inside of a table in this div block -->
+		        	</div>
+
+		        </div>
+        	</div>
+        	<div style="display: block" v-if="showing_profile">
+		        <h1 style="font-size:24px;"> User Profile </h1>
+		        		        <!--img src="=URL('default', 'download', args=user_profile.image)" /-->
+		        <p style="font-size: 20px">User name: ${user_profile.fname} ${user_profile.lname}</p>
+		        <p style="font-size: 20px">Bio: ${user_profile.bio}</p>
+		</div>
+	    </div>
+	    <!--i class="flaticon-orange"></i>
+	    <i class="flaticon-apple-1"></i>
+	    <i class="flaticon-banana"></i-->
+	    
+
+	    <!-- current end of vue.js file --> 
+
+</div>
+<script src="{{=URL('static', 'js/default_index.js')}}"></script>
